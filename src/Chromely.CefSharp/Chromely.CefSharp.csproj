@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <ProductVersion>5.1.83.0-pre01</ProductVersion>
+    <AssemblyVersion>5.1.83.0</AssemblyVersion>
+    <FileVersion>5.1.83.0</FileVersion>
+    <Version>5.1.83.0-pre01</Version>
+    <Authors>Chromely Projects</Authors>
+    <Company>Chromely Projects</Company>
+    <Description>Chromely CefSharp implementation. Chromely.CefSharp version naming is based Chromely and Chromium versions implemented- major.minor.chromuim version.patch e.g 1.0.71.0.</Description>
+    <Copyright>Copyright © 2017-2019 Chromely Projects</Copyright>
+    <PackageLicenseUrl>https://github.com/chromelyapps/Chromely/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/chromelyapps/Chromely</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/chromelyapps/Chromely/blob/master/nugets/chromely.ico?raw=true</PackageIconUrl>
+    <PackageTags>Cef Chromium HTML5 Desktop Chromely CefSharp Ajax HTTP XHR JavaScript Binding (JSB)</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>
+    </PackageReleaseNotes>
+    <RepositoryType>Github Repository</RepositoryType>
+    <RepositoryUrl>https://github.com/chromelyapps/Chromely</RepositoryUrl>
+    <Configurations>Debug;Release;ReleaseLinux;DebugLinux</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Debug\netstandard2.1\Chromely.CefSharp.xml</DocumentationFile>
+    <NoWarn>1701;1702; NU5125;7035</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.1\Chromely.CefSharp.xml</DocumentationFile>
+    <NoWarn>1701;1702; NU5125;7035</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CefSharp.Common" Version="83.4.20" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
+      <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="chromely.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Chromely.Core">
+      <HintPath>..\Chromely.Core\Chromely.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
