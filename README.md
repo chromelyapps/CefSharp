@@ -13,7 +13,7 @@ Have a quick question? Wanna chat? Connect on  [![Join the chat at https://gitte
 
 Have an app/project/tool using Chromely - [please share!](https://github.com/chromelyapps/Chromely/issues/63)
 
-A basic Chromely project requires:
+A basic Chromely project requires: - [Demos](https://github.com/chromelyapps/demo-projects/tree/master/chromely_v5_1)
 
 ````csharp
 class Program
