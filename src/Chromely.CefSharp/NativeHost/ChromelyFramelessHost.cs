@@ -27,6 +27,11 @@ namespace Chromely.CefSharp.NativeHost
         {
             base.OnCreated(hWnd);
 
+            if (_options.Fullscreen || _options.KioskMode)
+            {
+                throw new NotSupportedException("Fullscreen/Kiok mode is not supported in ChromelyFramelessApp. Please use ChromelyBasicApp instead.");
+            }
+
             _options.WindowFrameless = true;
             _framelessInfo = new FramelessInfo(hWnd);
             _framelessOption = _options.FramelessOption;
@@ -34,6 +39,40 @@ namespace Chromely.CefSharp.NativeHost
 
             _dwmFramelessController.HandleCompositionchanged();
             _dwmFramelessController.HandleThemechanged();
+        }
+
+        protected override WindowStylePlacement GetWindowStylePlacement(WindowState state)
+        {
+            WindowStylePlacement windowStyle = new WindowStylePlacement(_options);
+            if (_options.UseCustomStyle && _options != null && _options.CustomStyle.IsValid())
+            {
+                return GetWindowStyles(_options.CustomStyle, state);
+            }
+
+            var styles = WS.OVERLAPPEDWINDOW | WS.CLIPCHILDREN | WS.CLIPSIBLINGS;
+            var exStyles = WS_EX.APPWINDOW | WS_EX.WINDOWEDGE | WS_EX.TRANSPARENT;
+
+            windowStyle.Styles = styles;
+            windowStyle.ExStyles = exStyles;
+            windowStyle.RECT = GetWindowBounds();
+
+            switch (state)
+            {
+                case WindowState.Normal:
+                    windowStyle.ShowCommand = SW.SHOWNORMAL;
+                    break;
+
+                case WindowState.Maximize:
+                    windowStyle.Styles |= WS.MAXIMIZE;
+                    windowStyle.ShowCommand = SW.SHOWMAXIMIZED;
+                    break;
+
+                default:
+                    windowStyle.ShowCommand = SW.SHOWNORMAL;
+                    break;
+            }
+
+            return windowStyle;
         }
 
         public override void ResizeBrowser(IntPtr browserHande, int width, int height)
@@ -59,43 +98,6 @@ namespace Chromely.CefSharp.NativeHost
             {
                 SetWindowPos(browserHande, IntPtr.Zero, 0, 0, width, height, SWP.NOZORDER);
             }
-        }
-
-        protected override WindowStylePlacement GetWindowStylePlacement(WindowState state)
-        {
-            WindowStylePlacement windowStyle = new WindowStylePlacement();
-            if (_options.UseCustomStyle && _options != null && _options.CustomStyle.IsValid())
-            {
-                return GetWindowStyles(_options.CustomStyle, state);
-            }
-
-            var styles = WS.OVERLAPPEDWINDOW | WS.CLIPCHILDREN | WS.CLIPSIBLINGS;
-            var exStyles = WS_EX.APPWINDOW | WS_EX.WINDOWEDGE | WS_EX.TRANSPARENT;
-
-            windowStyle.Styles = styles;
-            windowStyle.ExStyles = exStyles;
-            windowStyle.RECT = GetWindowBounds();
-
-            switch (state)
-            {
-                case WindowState.Normal:
-                    windowStyle.ShowCommand = SW.SHOWNORMAL;
-                    break;
-
-                case WindowState.Maximize:
-                    windowStyle.Styles |= WS.MAXIMIZE;
-                    windowStyle.ShowCommand = SW.SHOWMAXIMIZED;
-                    break;
-
-                case WindowState.Fullscreen:
-                    windowStyle.ShowCommand = SW.SHOWMAXIMIZED;
-                    break;
-
-                default:
-                    break;
-            }
-
-            return windowStyle;
         }
 
         #region Frameless WndProc
@@ -194,6 +196,7 @@ namespace Chromely.CefSharp.NativeHost
                 case WM.THEMECHANGED:
                     _dwmFramelessController?.HandleThemechanged();
                     break;
+
                 case WM.WINDOWPOSCHANGED:
                     WINDOWPOS windPos = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
                     _dwmFramelessController?.HandleWindowPosChanged(windPos);

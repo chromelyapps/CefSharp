@@ -14,6 +14,8 @@ namespace Chromely.CefSharp.NativeHost
             Dispose(false);
         }
 
+        private bool _disposed = false;
+
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)

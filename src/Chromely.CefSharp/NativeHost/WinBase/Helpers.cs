@@ -2,6 +2,7 @@
 // Use of this source code is governed by Chromely MIT licensed and CefSharp BSD-style license that can be found in the LICENSE file.
 
 using Chromely.Core.Configuration;
+using Chromely.Core.Host;
 using Chromely.Core.Logging;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,13 +15,13 @@ using static Chromely.Interop.User32;
 namespace Chromely.CefSharp.NativeHost
 {
     [Flags]
-    internal enum DialogFlags
+    public enum DialogFlags
     {
         Modal = 1 << 0,
         DestroyWithParent = 1 << 1,
     }
 
-    internal enum MessageType
+    public enum MessageType
     {
         Info,
         Warning,
@@ -29,7 +30,7 @@ namespace Chromely.CefSharp.NativeHost
         Other,
     }
 
-    internal enum ButtonsType
+    public enum ButtonsType
     {
         None,
         Ok,
@@ -39,7 +40,7 @@ namespace Chromely.CefSharp.NativeHost
         OkCancel,
     }
 
-    internal static class Utils
+    public static class Utils
     {
         public static void AssertNotNull(string methodName, IntPtr handle)
         {
@@ -50,24 +51,16 @@ namespace Chromely.CefSharp.NativeHost
         }
     }
 
-    internal class WindowStylePlacement
+    public class WindowStylePlacement
     {
         public static WS NormalStyles = WS.OVERLAPPEDWINDOW | WS.CLIPCHILDREN | WS.CLIPSIBLINGS;
         public static WS_EX NormalExStyles = WS_EX.APPWINDOW | WS_EX.WINDOWEDGE;
 
-        public WindowStylePlacement()
-        {
-            RECT = new RECT(0, 0, 1200, 800);
-            WindowPlacement = new WINDOWPLACEMENT();
-            Styles = WS.OVERLAPPEDWINDOW | WS.CLIPCHILDREN | WS.CLIPSIBLINGS;
-            ExStyles = WS_EX.APPWINDOW;
-        }
-
         public WindowStylePlacement(IWindowOptions options)
         {
-            RECT = new System.Drawing.Rectangle(options.Position.X, options.Position.Y, options.Size.Width, options.Size.Height);
+            RECT = new Rectangle(options.Position.X, options.Position.Y, options.Size.Width, options.Size.Height);
             WindowPlacement = new WINDOWPLACEMENT();
-            if (options.CustomStyle != null && 
+            if (options.CustomStyle != null &&
                 options.CustomStyle.WindowStyles != 0 &&
                 options.CustomStyle.WindowExStyles != 0)
             {
@@ -79,16 +72,18 @@ namespace Chromely.CefSharp.NativeHost
                 Styles = NormalStyles;
                 ExStyles = NormalExStyles;
             }
+
+            State = options.WindowState;
         }
 
+        public WindowState State { get; set; }
         public WS Styles { get; set; }
         public WS_EX ExStyles { get; set; }
         public RECT RECT { get; set; }
         public SW ShowCommand { get; set; }
-        public Size FullscreenSize { get; set; }
         public WINDOWPLACEMENT WindowPlacement { get; set; }
-        public WS FullscreenStyles 
-        { 
+        public WS FullscreenStyles
+        {
             get
             {
                 var styles = WS.OVERLAPPEDWINDOW | WS.CLIPCHILDREN | WS.CLIPSIBLINGS;
@@ -272,3 +267,4 @@ namespace Chromely.CefSharp.NativeHost
         }
     }
 }
+

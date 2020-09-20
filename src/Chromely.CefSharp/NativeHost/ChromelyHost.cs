@@ -5,5 +5,8 @@ namespace Chromely.CefSharp.NativeHost
 {
     internal class ChromelyHost : NativeHostBase
     {
+        public ChromelyHost(IKeyboadHookHandler keyboadHandler = null) : base(keyboadHandler)
+        {
+        }
     }
 }
