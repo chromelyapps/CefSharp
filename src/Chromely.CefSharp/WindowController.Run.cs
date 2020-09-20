@@ -63,7 +63,7 @@ namespace Chromely.CefSharp
                 LocalesDirPath = localesDirPath,
                 Locale = "en-US",
                 RemoteDebuggingPort = 20480,
-                MultiThreadedMessageLoop = true,
+                MultiThreadedMessageLoop = !_config.WindowOptions.UseOnlyCefMessageLoop,
                 CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache"),
                 LogSeverity = LogSeverity.Default,
                 LogFile = "logs\\chromely.cef_" + DateTime.Now.ToString("yyyyMMdd") + ".log",
@@ -73,6 +73,10 @@ namespace Chromely.CefSharp
             _settings.Update(_config.CustomSettings);
             _settings.UpdateCommandOptions(_config.CommandLineOptions);
             _settings.UpdateCommandLineArgs(_config.CommandLineArgs);
+
+            // If MultiThreadedMessageLoop is overriden in Setting using CustomSettings, then
+            // It is assumed that the developer way not be aware of IWindowOptions - UseOnlyCefMessageLoop
+            _config.WindowOptions.UseOnlyCefMessageLoop = !_settings.MultiThreadedMessageLoop;
 
             // Set DevTools url
             string devtoolsUrl = _config.DevToolsUrl;
