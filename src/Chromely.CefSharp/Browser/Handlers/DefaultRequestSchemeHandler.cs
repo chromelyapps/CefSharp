@@ -59,7 +59,7 @@ namespace Chromely.CefSharp.Browser
         public override CefReturnValue ProcessRequestAsync(IRequest request, ICallback callback)
         {
             var scheme = _requestSchemeHandlerProvider?.GetScheme(request.Url);
-            if (scheme != null && scheme.UrlSchemeType == UrlSchemeType.Resource)
+            if (scheme != null && scheme.UrlSchemeType == UrlSchemeType.LocalRquest)
             {
                 _stream = null;
                 var uri = new Uri(request.Url);
