@@ -45,7 +45,7 @@ namespace Chromely.CefSharp
                                     DomainName = item.Host,
                                     SchemeHandlerFactory = schemeHandler,
                                     IsCorsEnabled = true,
-                                    IsSecure = true
+                                    IsSecure = false 
                                 });
                             }
                         }
