@@ -76,9 +76,14 @@ namespace Chromely.CefSharp.Browser
                         }
                     }
                 });
+                return CefReturnValue.ContinueAsync;
             }
-
-            return CefReturnValue.ContinueAsync;
+            else
+            {
+                StatusCode = (int)HttpStatusCode.NotFound;
+                callback.Continue();
+                return CefReturnValue.ContinueAsync;
+            }            
         }
 
         protected virtual void SetResponseInfoOnSuccess()
