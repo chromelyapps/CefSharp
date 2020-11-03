@@ -17,6 +17,11 @@ namespace Chromely.CefSharp.Browser
     /// </summary>
     public class DefaultResourceSchemeHandler : ResourceHandler
     {
+        private const string STATUSTEXT_OK = "OK";
+        private const string STATUSTEXT_ZEROFILESIZE = "Resource loading error: file size is zero.";
+        private const string STATUSTEXT_FILENOTFOUND = "File not found.";
+        private const string STATUSTEXT_BADREQUEST = "Resource loading error.";
+
         protected Stream _stream;
         protected string _mimeType;
 
@@ -40,9 +45,26 @@ namespace Chromely.CefSharp.Browser
             var u = new Uri(request.Url);
             var file = u.Authority + u.AbsolutePath;
 
-            // Check if file exists and not empty
             var fileInfo = new FileInfo(file);
-            if ((fileInfo.Exists) && fileInfo.Length > 0)
+            // Check if file exists 
+            if (!fileInfo.Exists)
+            {
+                StatusCode = (int)HttpStatusCode.NotFound;
+                StatusText = STATUSTEXT_FILENOTFOUND;
+                callback.Continue();
+
+                Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
+            }
+            // Check if file exists but empty
+            else if (fileInfo.Length == 0)
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest;
+                StatusText = STATUSTEXT_ZEROFILESIZE;
+                callback.Continue();
+
+                Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
+            }
+            else  
             {
                 Task.Run(() =>
                 {
@@ -62,6 +84,8 @@ namespace Chromely.CefSharp.Browser
                         catch (Exception exception)
                         {
                             _stream = null;
+                            StatusCode = (int)HttpStatusCode.BadRequest;
+                            StatusText = STATUSTEXT_BADREQUEST;
                             Logger.Instance.Log.LogError(exception, exception.Message);
                         }
 
@@ -76,14 +100,9 @@ namespace Chromely.CefSharp.Browser
                         }
                     }
                 });
-                return CefReturnValue.ContinueAsync;
             }
-            else
-            {
-                StatusCode = (int)HttpStatusCode.NotFound;
-                callback.Continue();
-                return CefReturnValue.ContinueAsync;
-            }            
+
+            return CefReturnValue.ContinueAsync;
         }
 
         protected virtual void SetResponseInfoOnSuccess()
@@ -94,6 +113,7 @@ namespace Chromely.CefSharp.Browser
             ResponseLength = _stream.Length;
             MimeType = _mimeType;
             StatusCode = (int)HttpStatusCode.OK;
+            StatusText = STATUSTEXT_OK;
             Stream = _stream;
         }
     }

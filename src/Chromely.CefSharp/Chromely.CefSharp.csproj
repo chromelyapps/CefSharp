@@ -14,7 +14,7 @@
     <Description>Chromely CefSharp implementation - this is in NetStandard as it can be used in both .NET Framework, .NET Core 3 and .NET 5 (Windows Only). Chromely.CefSharp version naming is based Chromely and Chromium versions implemented- major.minor.chromuim version.patch e.g 1.0.71.0.</Description>
     <Copyright>Copyright © 2017-2020 Chromely Projects</Copyright>
     <PackageLicenseUrl>https://github.com/chromelyapps/Chromely/blob/master/LICENSE.md</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/chromelyapps/Chromely</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/chromelyapps/CefSharp</PackageProjectUrl>
     <PackageIconUrl>https://github.com/chromelyapps/Chromely/blob/master/nugets/chromely.ico?raw=true</PackageIconUrl>
     <PackageTags>CEF Chromium HTML5 Desktop Chromely CefSharp NetStandard .NET Core 3 .NET 5</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -24,7 +24,7 @@
       - Adding a configurable option - UseOnlyCefMessageLoop - https://github.com/chromelyapps/CefSharp/commit/29b26f293baea1430d4f2f1990a79d7416041a39
     </PackageReleaseNotes>
     <RepositoryType>Github Repository</RepositoryType>
-    <RepositoryUrl>https://github.com/chromelyapps/Chromely</RepositoryUrl>
+    <RepositoryUrl>https://github.com/chromelyapps/CefSharp</RepositoryUrl>
     <Configurations>Debug;Release;ReleaseLinux;DebugLinux</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
