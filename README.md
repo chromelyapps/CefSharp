@@ -16,7 +16,7 @@ Have an app/project/tool using Chromely - [please share!](https://github.com/chr
 [![Chromely.Core](http://img.shields.io/nuget/vpre/Chromely.Core.svg?style=flat&label=Chromely.Core)](https://www.nuget.org/packages/Chromely.Core)
 [![Chromely.CefSharp](http://img.shields.io/nuget/vpre/Chromely.svg?style=flat&label=Chromely.CefSharp)](https://www.nuget.org/packages/Chromely.CefSharp)
 
-A basic Chromely project requires: - [Demos](https://github.com/chromelyapps/demo-projects/tree/master/chromely_v5_1)
+A basic Chromely project requires: - [Demos](https://github.com/chromelyapps/demo-projects/tree/master/regular-chromely/CefSharpDemo)
 
 ````csharp
 class Program
@@ -34,7 +34,7 @@ class Program
 ````
 
 ### Chromely Demos 
-Get started with our [demos](https://github.com/chromelyapps/demo-projects). 
+Get started with our [demos](https://github.com/chromelyapps/demo-projects/tree/master/regular-chromely/CefSharpDemo). 
 ![](https://github.com/chromelyapps/Chromely/blob/master/Screenshots/chromely_screens_n3.gif)
 
 ### References
