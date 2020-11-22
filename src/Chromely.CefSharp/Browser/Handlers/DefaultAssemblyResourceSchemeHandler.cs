@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CefSharp;
@@ -56,8 +57,7 @@ namespace Chromely.CefSharp.Browser
             // Check if file exists 
             if (!fileInfo.Exists)
             {
-                StatusCode = (int)HttpStatusCode.NotFound;
-                StatusText = STATUSTEXT_FILENOTFOUND;
+                SetResponseInfoOnFailure((int)HttpStatusCode.NotFound, STATUSTEXT_FILENOTFOUND);
                 callback.Continue();
 
                 Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
@@ -65,8 +65,7 @@ namespace Chromely.CefSharp.Browser
             // Check if file exists but empty
             else if (fileInfo.Length == 0)
             {
-                StatusCode = (int)HttpStatusCode.BadRequest;
-                StatusText = STATUSTEXT_ZEROFILESIZE;
+                SetResponseInfoOnFailure((int)HttpStatusCode.BadRequest, STATUSTEXT_ZEROFILESIZE);
                 callback.Continue();
 
                 Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
@@ -89,9 +88,7 @@ namespace Chromely.CefSharp.Browser
                         }
                         catch (Exception exception)
                         {
-                            _stream = null;
-                            StatusCode = (int)HttpStatusCode.BadRequest;
-                            StatusText = STATUSTEXT_BADREQUEST;
+                            SetResponseInfoOnFailure((int)HttpStatusCode.BadRequest, STATUSTEXT_BADREQUEST);
                             Logger.Instance.Log.LogError(exception, exception.Message);
                         }
 
@@ -162,6 +159,13 @@ namespace Chromely.CefSharp.Browser
             StatusCode = (int)HttpStatusCode.OK;
             StatusText = STATUSTEXT_OK;
             Stream = _stream;
+        }
+
+        protected void SetResponseInfoOnFailure(int status, string statusText)
+        {
+            _stream = GetMemoryStream(statusText, Encoding.UTF8);
+            StatusCode = status;
+            StatusText = statusText;
         }
     }
 }
