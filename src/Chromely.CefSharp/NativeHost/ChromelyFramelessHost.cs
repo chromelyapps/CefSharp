@@ -9,7 +9,7 @@ using Chromely.Core.Host;
 
 namespace Chromely.CefSharp.NativeHost
 {
-    internal class ChromelyFramelessHost : NativeHostBase
+    public class ChromelyFramelessHost : NativeHostBase
     {
         protected DwmFramelessController _dwmFramelessController;
         protected FramelessInfo _framelessInfo;
