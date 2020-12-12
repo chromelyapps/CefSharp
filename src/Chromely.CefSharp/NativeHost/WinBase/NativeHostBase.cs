@@ -1,5 +1,5 @@
 ﻿// Copyright © 2017-2020 Chromely Projects. All rights reserved.
-// Use of this source code is governed by Chromely MIT licensed and CefSharp BSD-style license that can be found in the LICENSE file.
+// Use of this source code is governed by MIT license that can be found in the LICENSE file.
 
 using System;
 using System.Diagnostics;
@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using CefSharp;
 using Chromely.Core.Configuration;
 using Chromely.Core.Host;
@@ -21,6 +20,8 @@ namespace Chromely.CefSharp.NativeHost
 {
     public abstract partial class NativeHostBase : IChromelyNativeHost
     {
+        private const int PROCESS_IDLE_ID = 0;
+
         [DllImport(Libraries.Kernel32)]
         public static extern IntPtr GetConsoleWindow();
 
@@ -33,9 +34,12 @@ namespace Chromely.CefSharp.NativeHost
         protected const uint IDI_APPLICATION = 32512;
         protected const int CW_USEDEFAULT = unchecked((int)0x80000000);
         protected static RECT DefaultBounds => new RECT(CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT);
-        public static NativeHostBase NativeInstance { get; set; }
+        public static NativeHostBase NativeInstance;
+        protected static bool WindowInterceptorInitialized = false;
+        protected IWindowMessageInterceptor _messageInterceptor;
         protected IWindowOptions _options;
         protected IntPtr _handle;
+        protected bool _windowFrameless;
         protected bool _isInitialized;
         protected IntPtr _consoleParentInstance;
         protected WNDPROC _wndProc;
@@ -48,10 +52,11 @@ namespace Chromely.CefSharp.NativeHost
         public event EventHandler<SizeChangedEventArgs> HostSizeChanged;
         public event EventHandler<CloseEventArgs> HostClose;
 
-        public NativeHostBase(IKeyboadHookHandler keyboadHandler = null)
+        public NativeHostBase(IWindowMessageInterceptor messageInterceptor, IKeyboadHookHandler keyboadHandler)
         {
             _isInitialized = false;
             _handle = IntPtr.Zero;
+            _messageInterceptor = messageInterceptor;
             _keyboadHandler = keyboadHandler;
         }
 
@@ -59,15 +64,13 @@ namespace Chromely.CefSharp.NativeHost
 
         public unsafe virtual void CreateWindow(IWindowOptions options, bool debugging)
         {
-            _options = options;
-            if (_keyboadHandler == null)
-            {
-                _keyboadHandler = new DefaulKeyboadHookHandler(this, _options);
-            }
+            _keyboadHandler?.SetNativeHost(this);
+           _options = options;
+            _windowFrameless = _options.WindowFrameless;
 
             _wndProc = WndProc;
             _consoleParentInstance = GetConsoleWindow();
-            _options.WindowState = (_options.Fullscreen || _options.KioskMode) ? WindowState.Fullscreen : _options.WindowState;
+            _options.WindowState = (_options.Fullscreen || _options.KioskMode) ?  WindowState.Fullscreen : _options.WindowState;
             _windoStylePlacement = new WindowStylePlacement(_options);
 
             User32.WNDCLASS wcex = new User32.WNDCLASS();
@@ -79,7 +82,7 @@ namespace Chromely.CefSharp.NativeHost
             wcex.hCursor = User32.LoadCursorW(IntPtr.Zero, (IntPtr)CursorResourceId.IDC_ARROW);
             wcex.hbrBackground = Gdi32.GetStockObject(Gdi32.StockObject.WHITE_BRUSH);
             wcex.lpszMenuName = null;
-            wcex.hInstance = _consoleParentInstance;
+            wcex.hInstance = _consoleParentInstance; 
 
             fixed (char* c = Chromely_WINDOW_CLASS)
             {
@@ -157,16 +160,23 @@ namespace Chromely.CefSharp.NativeHost
             const int StandardDpi = 96;
             float scale = 1;
             var hdc = GetDC(_handle);
-            try
-            {
+            try {
                 var dpi = Gdi32.GetDeviceCaps(hdc, Gdi32.DeviceCapability.LOGPIXELSY);
                 scale = (float)dpi / StandardDpi;
             }
-            finally
-            {
+            finally {
                 ReleaseDC(_handle, hdc);
             }
             return scale;
+        }
+
+        public virtual void SetupMessageInterceptor(IntPtr browserWindowHandle)
+        {
+            if (!WindowInterceptorInitialized && _windowFrameless)
+            {
+                _messageInterceptor?.Setup(this, browserWindowHandle);
+                WindowInterceptorInitialized = true;
+            }
         }
 
         public virtual void ResizeBrowser(IntPtr browserHande, int width, int height)
@@ -174,14 +184,13 @@ namespace Chromely.CefSharp.NativeHost
             SetWindowPos(browserHande, IntPtr.Zero, 0, 0, width, height, SWP.NOZORDER);
         }
 
-        public virtual WindowState GetWindowState()
+        public virtual WindowState GetWindowState() 
         {
             var placement = new WINDOWPLACEMENT();
             placement.length = (uint)Marshal.SizeOf(placement);
             GetWindowPlacement(_handle, out placement);
 
-            switch (placement.showCmd)
-            {
+            switch (placement.showCmd) {
                 case SW.Maximized:
                     return WindowState.Maximize;
                 case SW.Minimized:
@@ -197,7 +206,7 @@ namespace Chromely.CefSharp.NativeHost
         /// <summary> Sets window state. Maximise / Minimize / Restore. </summary>
         /// <param name="state"> The state to set. </param>
         /// <returns> True if it succeeds, false if it fails. </returns>
-        public virtual bool SetWindowState(WindowState state)
+        public virtual bool SetWindowState(WindowState state) 
         {
             // Window State should not change for Kiosk mode
             if (this._options.KioskMode)
@@ -229,7 +238,7 @@ namespace Chromely.CefSharp.NativeHost
                     // into its own function
             }
 
-            return result == BOOL.TRUE;
+            return  result == BOOL.TRUE;
         }
 
         public virtual void Exit()
@@ -240,18 +249,20 @@ namespace Chromely.CefSharp.NativeHost
                 {
                     DetachHooks();
                     ShowWindow(_handle, SW.HIDE);
-                    Task.Run(() =>
+
+                    uint processId = 0;
+                    GetWindowThreadProcessId(_handle, out processId);
+                    if (processId != PROCESS_IDLE_ID)
                     {
-                        uint processId = 0;
-                        GetWindowThreadProcessId(_handle, out processId);
                         var process = Process.GetProcessById((int)processId);
                         if (process != null)
                         {
                             process.Kill();
                         }
-                    });
+                    }
+
                 }
-                catch { }
+                catch {}
             }
         }
 
@@ -301,6 +312,10 @@ namespace Chromely.CefSharp.NativeHost
             }
 
             return size;
+        }
+
+        protected virtual void PreCreated(IntPtr hWnd)
+        {
         }
 
         protected virtual void OnCreated(IntPtr hWnd)
@@ -354,7 +369,7 @@ namespace Chromely.CefSharp.NativeHost
                     {
                         using (var resStream = assembly.GetManifestResourceStream(iconAsResource))
                         {
-                            using (var fileStream = new FileStream(_options.RelativePathToIconFile, FileMode.Create))
+                            using(var fileStream = new FileStream(_options.RelativePathToIconFile, FileMode.Create))
                             {
                                 resStream?.CopyTo(fileStream);
                             }
@@ -404,6 +419,7 @@ namespace Chromely.CefSharp.NativeHost
                 styles &= ~(WS.CAPTION);
                 exStyles &= ~(WS_EX.DLGMODALFRAME | WS_EX.WINDOWEDGE | WS_EX.CLIENTEDGE | WS_EX.STATICEDGE);
                 state = WindowState.Fullscreen;
+                _options.DisableResizing = _options.KioskMode ? true : _options.DisableResizing;
             }
 
             windowStyle.Styles = styles;
@@ -488,10 +504,16 @@ namespace Chromely.CefSharp.NativeHost
             WM wmMsg = (WM)message;
             switch (wmMsg)
             {
-                case WM.CREATE:
+                case WM.NCCREATE:
                     {
                         NativeInstance = this;
                         _handle = hWnd;
+                        PreCreated(hWnd);
+                        break;
+                    }
+
+                case WM.CREATE:
+                    {
                         OnCreated(hWnd);
                         var createdEvent = new CreatedEventArgs(_handle, _handle);
                         HostCreated?.Invoke(this, createdEvent);
@@ -550,7 +572,6 @@ namespace Chromely.CefSharp.NativeHost
                         {
                             Cef.QuitMessageLoop();
                         }
-
                         PostQuitMessage(0);
                         break;
                     }
@@ -559,7 +580,6 @@ namespace Chromely.CefSharp.NativeHost
             }
 
             return (DefWindowProcW(hWnd, wmMsg, wParam, lParam));
-
         }
 
         #region WndProc Methods
@@ -624,7 +644,7 @@ namespace Chromely.CefSharp.NativeHost
             }
             catch
             {
-                DetachHooks();
+               DetachHooks();
             }
         }
 
@@ -639,5 +659,18 @@ namespace Chromely.CefSharp.NativeHost
 
 
         #endregion
+
+        protected static readonly HT[] BorderHitTestResults =
+        {
+            HT.TOP,
+            HT.TOPLEFT,
+            HT.TOPRIGHT,
+            HT.BOTTOM,
+            HT.BOTTOMLEFT,
+            HT.BOTTOMRIGHT,
+            HT.LEFT,
+            HT.RIGHT,
+            HT.BORDER
+        };
     }
 }

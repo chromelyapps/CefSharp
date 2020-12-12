@@ -17,9 +17,8 @@ namespace Chromely.CefSharp
         public Window(IChromelyNativeHost nativeHost, 
                       IChromelyConfiguration config,
                       ChromelyHandlersResolver handlersResolver)
-            : base(config)
+            : base(nativeHost, config)
         {
-            NativeHost = nativeHost;
             _handlersResolver = handlersResolver;
 
             IsBrowserInitializedChanged += BrowserInitializedChanged;
@@ -37,8 +36,6 @@ namespace Chromely.CefSharp
                 return IntPtr.Zero;
             }
         }
-
-        public IChromelyNativeHost NativeHost { get; private set; }
 
         public virtual void Init(object settings)
         {

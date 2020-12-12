@@ -15,7 +15,7 @@ namespace Chromely.CefSharp
 {
     public abstract class ChromelyAppBase : ChromelyApp
     {
-        public override void ConfigureCoreServices(ServiceCollection services)
+        public override void ConfigureCoreServices(IServiceCollection services)
         {
             base.ConfigureCoreServices(services);
 
@@ -32,7 +32,7 @@ namespace Chromely.CefSharp
             services.TryAddSingleton<ChromelyWindowController, WindowController>();
         }
 
-        public sealed override void ConfigureDefaultHandlers(ServiceCollection services)
+        public sealed override void ConfigureDefaultHandlers(IServiceCollection services)
         {
             base.ConfigureDefaultHandlers(services);
 

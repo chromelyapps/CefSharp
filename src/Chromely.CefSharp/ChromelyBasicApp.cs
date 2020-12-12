@@ -14,10 +14,12 @@ namespace Chromely.CefSharp
     /// </summary>
     public class ChromelyBasicApp: ChromelyAppBase
     {
-        public sealed override void ConfigureCoreServices(ServiceCollection services)
+        public sealed override void ConfigureCoreServices(IServiceCollection services)
         {
             base.ConfigureCoreServices(services);
-            services.TryAddSingleton<IChromelyNativeHost, ChromelyHost>();
+            services.TryAddSingleton<IWindowMessageInterceptor, DefaultWindowMessageInterceptor>();
+            services.TryAddSingleton<IKeyboadHookHandler, DefaulKeyboadHookHandler>();
+            services.TryAddSingleton<IChromelyNativeHost, ChromelyWinHost>();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using CefSharp;
 using CefSharp.Internals;
 using Chromely.Core.Configuration;
+using Chromely.Core.Host;
 using Chromely.Core.Logging;
 using Microsoft.Extensions.Logging;
 using static Chromely.Interop.User32;
@@ -77,11 +78,14 @@ namespace Chromely.CefSharp.Browser
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromiumBrowser"/> class.
         /// </summary>
-        public ChromiumBrowser(IChromelyConfiguration config)
+        public ChromiumBrowser(IChromelyNativeHost nativeHost, IChromelyConfiguration config)
         {
+            NativeHost = nativeHost;
             _config = config;
             CefSharpSettings.LegacyJavascriptBindingEnabled = false;
         }
+
+        public IChromelyNativeHost NativeHost { get; private set; }
 
         public void Initialize(CefSettings settings)
         {
@@ -519,8 +523,8 @@ namespace Chromely.CefSharp.Browser
             _browser = browser;
             IsBrowserInitialized = true;
 
-            //If Load was called after the call to CreateBrowser we'll call Load
-            //on the MainFrame
+            // If Load was called after the call to CreateBrowser we'll call Load
+            // on the MainFrame
             if (!_initialAddressLoaded && !string.IsNullOrEmpty(Address))
             {
                 browser.MainFrame.LoadUrl(Address);
@@ -529,7 +533,7 @@ namespace Chromely.CefSharp.Browser
             var host = this.GetBrowserHost();
             _browserWindowHandle = host.GetWindowHandle();
 
-            //Set Javascript execution
+            // Set Javascript execution
             this._config.JavaScriptExecutor = new DefaultJavaScriptExecutor(_browser);
 
             IsBrowserInitializedChanged?.Invoke(this, EventArgs.Empty);
@@ -625,6 +629,9 @@ namespace Chromely.CefSharp.Browser
             {
                 handler(this, args);
             }
+
+            // Setup window subclass to intercept message for frameless window dragging
+            NativeHost.SetupMessageInterceptor(_browserWindowHandle);
         }
 
         /// <summary>

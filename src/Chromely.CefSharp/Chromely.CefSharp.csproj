@@ -5,10 +5,10 @@
     <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    <ProductVersion>5.1.83.0</ProductVersion>
-    <AssemblyVersion>5.1.83.0</AssemblyVersion>
-    <FileVersion>5.1.83.0</FileVersion>
-    <Version>5.1.83.0</Version>
+    <ProductVersion>5.1.83.2</ProductVersion>
+    <AssemblyVersion>5.1.83.2</AssemblyVersion>
+    <FileVersion>5.1.83.2</FileVersion>
+    <Version>5.1.83.2</Version>
     <Authors>Chromely Projects</Authors>
     <Company>Chromely Projects</Company>
     <Description>Chromely CefSharp implementation - this is in NetStandard as it can be used in both .NET Framework, .NET Core 3 and .NET 5 (Windows Only). Chromely.CefSharp version naming is based Chromely and Chromium versions implemented- major.minor.chromuim version.patch e.g 1.0.71.0.</Description>
@@ -19,9 +19,8 @@
     <PackageTags>CEF Chromium HTML5 Desktop Chromely CefSharp NetStandard .NET Core 3 .NET 5</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-      - Upgrade to v5.1 - https://github.com/chromelyapps/Chromely/issues/225.
-      - Fixes for Fullscreen/Kiosk modes - https://github.com/chromelyapps/CefSharp/commit/cf9eb16976f707981770aba0d60f0281e86a3247
-      - Adding a configurable option - UseOnlyCefMessageLoop - https://github.com/chromelyapps/CefSharp/commit/29b26f293baea1430d4f2f1990a79d7416041a39
+      - Breaking changes.
+      - Fixes for frameless window - https://github.com/chromelyapps/Chromely/issues/266
     </PackageReleaseNotes>
     <RepositoryType>Github Repository</RepositoryType>
     <RepositoryUrl>https://github.com/chromelyapps/CefSharp</RepositoryUrl>
@@ -44,7 +43,6 @@
 
   <ItemGroup>
     <PackageReference Include="CefSharp.Common" Version="83.4.20" />
-    <PackageReference Include="Chromely.Core" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
     <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
@@ -54,6 +52,12 @@
 
   <ItemGroup>
     <None Include="chromely.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Chromely.Core">
+      <HintPath>..\Chromely.Core\Chromely.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
