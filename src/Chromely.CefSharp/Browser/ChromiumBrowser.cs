@@ -719,6 +719,8 @@ namespace Chromely.CefSharp.Browser
             }
         }
 
+        public IAudioHandler AudioHandler { get; set; }
+
         /// <summary>
         /// Returns the current IBrowser Instance
         /// </summary>
