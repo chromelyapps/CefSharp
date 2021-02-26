@@ -2,6 +2,7 @@
 // Use of this source code is governed by Chromely MIT licensed and CefSharp BSD-style license that can be found in the LICENSE file.
 
 using CefSharp;
+using Chromely.Core;
 
 namespace Chromely.CefSharp.Browser
 {
@@ -11,10 +12,12 @@ namespace Chromely.CefSharp.Browser
     public class DefaultAssemblyResourceSchemeHandlerFactory : ISchemeHandlerFactory
     {
         protected readonly IChromelyRequestSchemeHandlerProvider _requestSchemeHandlerProvider;
+        protected readonly IChromelyErrorHandler _chromelyErrorHandler;
 
-        public DefaultAssemblyResourceSchemeHandlerFactory(IChromelyRequestSchemeHandlerProvider requestSchemeHandlerProvider)
+        public DefaultAssemblyResourceSchemeHandlerFactory(IChromelyRequestSchemeHandlerProvider requestSchemeHandlerProvider, IChromelyErrorHandler chromelyErrorHandler)
         {
             _requestSchemeHandlerProvider = requestSchemeHandlerProvider;
+            _chromelyErrorHandler = chromelyErrorHandler;
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace Chromely.CefSharp.Browser
         /// </returns>
         public IResourceHandler Create(IBrowser browser, IFrame frame, string schemeName, IRequest request)
         {
-            return new DefaultAssemblyResourceSchemeHandler(_requestSchemeHandlerProvider);
+            return new DefaultAssemblyResourceSchemeHandler(_requestSchemeHandlerProvider, _chromelyErrorHandler);
         }
     }
 }

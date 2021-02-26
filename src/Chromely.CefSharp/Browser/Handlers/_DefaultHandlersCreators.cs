@@ -62,11 +62,14 @@ namespace Chromely.CefSharp.Browser
      */
     internal sealed class ChromelyResourceSchemeHandlerFactory : DefaultResourceSchemeHandlerFactory, IDefaultResourceCustomHandler
     {
+        public ChromelyResourceSchemeHandlerFactory(IChromelyErrorHandler chromelyErrorHandler) : base(chromelyErrorHandler)
+        {
+        }
     }
 
     internal sealed class ChromelyAssemblyResourceSchemeHandlerFactory : DefaultAssemblyResourceSchemeHandlerFactory, IDefaultAssemblyResourceCustomHandler
     {
-        public ChromelyAssemblyResourceSchemeHandlerFactory(IChromelyRequestSchemeHandlerProvider requestSchemeHandlerProvider) : base(requestSchemeHandlerProvider)
+        public ChromelyAssemblyResourceSchemeHandlerFactory(IChromelyRequestSchemeHandlerProvider requestSchemeHandlerProvider, IChromelyErrorHandler chromelyErrorHandler) : base(requestSchemeHandlerProvider, chromelyErrorHandler)
         {
         }
     }

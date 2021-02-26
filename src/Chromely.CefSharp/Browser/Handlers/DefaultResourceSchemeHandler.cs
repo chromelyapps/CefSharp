@@ -7,9 +7,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using CefSharp;
-using Chromely.Core.Logging;
+using Chromely.Core;
 using Chromely.Core.Network;
-using Microsoft.Extensions.Logging;
 
 namespace Chromely.CefSharp.Browser
 {
@@ -19,12 +18,17 @@ namespace Chromely.CefSharp.Browser
     public class DefaultResourceSchemeHandler : ResourceHandler
     {
         private const string STATUSTEXT_OK = "OK";
-        private const string STATUSTEXT_ZEROFILESIZE = "Resource loading error: file size is zero.";
-        private const string STATUSTEXT_FILENOTFOUND = "File not found.";
-        private const string STATUSTEXT_BADREQUEST = "Resource loading error.";
 
-        protected Stream _stream;
-        protected string _mimeType;
+        protected IChromelyResource _chromelyResource;
+        protected IChromelyErrorHandler _chromelyErrorHandler;
+        protected FileInfo _fileInfo;
+
+        public DefaultResourceSchemeHandler(IChromelyErrorHandler chromelyErrorHandler)
+        {
+            _chromelyResource = new ChromelyResource();
+            _chromelyErrorHandler = chromelyErrorHandler;
+            _fileInfo = null;
+        }
 
         /// <summary>
         /// The process request async.
@@ -46,22 +50,18 @@ namespace Chromely.CefSharp.Browser
             var u = new Uri(request.Url);
             var file = u.Authority + u.AbsolutePath;
 
-            var fileInfo = new FileInfo(file);
+            _fileInfo = new FileInfo(file);
             // Check if file exists 
-            if (!fileInfo.Exists)
+            if (!_fileInfo.Exists)
             {
-                SetResponseInfoOnFailure((int)HttpStatusCode.NotFound, STATUSTEXT_FILENOTFOUND);
+                _chromelyResource = _chromelyErrorHandler.HandleError(_fileInfo);
                 callback.Continue();
-
-                Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
             }
             // Check if file exists but empty
-            else if (fileInfo.Length == 0)
+            else if (_fileInfo.Length == 0)
             {
-                SetResponseInfoOnFailure((int)HttpStatusCode.BadRequest, STATUSTEXT_ZEROFILESIZE);
+                _chromelyResource = _chromelyErrorHandler.HandleError(_fileInfo);
                 callback.Continue();
-
-                Logger.Instance.Log.LogWarning($"File: {file}: {StatusText}");
             }
             else  
             {
@@ -69,24 +69,23 @@ namespace Chromely.CefSharp.Browser
                 {
                     using (callback)
                     {
-                        _stream = null;
-                        _mimeType = "text/html";
+                        _chromelyResource.Content = null;
+                        _chromelyResource.MimeType = "text/html";
 
                         try
                         {
                             byte[] fileBytes = File.ReadAllBytes(file);
-                            _stream = new MemoryStream(fileBytes);
+                            _chromelyResource.Content = new MemoryStream(fileBytes);
 
                             string extension = Path.GetExtension(file);
-                            _mimeType = MimeMapper.GetMimeType(extension);
+                            _chromelyResource.MimeType = MimeMapper.GetMimeType(extension);
                         }
                         catch (Exception exception)
                         {
-                            SetResponseInfoOnFailure((int)HttpStatusCode.BadRequest, STATUSTEXT_BADREQUEST);
-                            Logger.Instance.Log.LogError(exception, exception.Message);
+                            _chromelyResource = _chromelyErrorHandler.HandleError(_fileInfo, exception);
                         }
 
-                        if (_stream == null)
+                        if (_chromelyResource.Content == null)
                         {
                             callback.Cancel();
                         }
@@ -105,20 +104,13 @@ namespace Chromely.CefSharp.Browser
         protected virtual void SetResponseInfoOnSuccess()
         {
             //Reset the stream position to 0 so the stream can be copied into the underlying unmanaged buffer
-            _stream.Position = 0;
+            _chromelyResource.Content.Position = 0;
             //Populate the response values - No longer need to implement GetResponseHeaders (unless you need to perform a redirect)
-            ResponseLength = _stream.Length;
-            MimeType = _mimeType;
+            ResponseLength = _chromelyResource.Content.Length;
+            MimeType = _chromelyResource.MimeType;
             StatusCode = (int)HttpStatusCode.OK;
             StatusText = STATUSTEXT_OK;
-            Stream = _stream;
-        }
-
-        protected void SetResponseInfoOnFailure(int status, string statusText)
-        {
-            _stream = GetMemoryStream(statusText, Encoding.UTF8);
-            StatusCode = status;
-            StatusText = statusText;
+            Stream = _chromelyResource.Content;
         }
     }
 }

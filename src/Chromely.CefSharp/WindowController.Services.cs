@@ -54,7 +54,7 @@ namespace Chromely.CefSharp
             }
 
             urlTypesMapper = new Dictionary<UrlSchemeType, Type>();
-            urlTypesMapper.Add(UrlSchemeType.LocalRquest, typeof(IDefaultRequestCustomHandler));
+            urlTypesMapper.Add(UrlSchemeType.LocalRequest, typeof(IDefaultRequestCustomHandler));
             urlTypesMapper.Add(UrlSchemeType.ExternalRequest, typeof(IDefaultExernalRequestCustomHandler));
 
             foreach (var urlType in urlTypesMapper)

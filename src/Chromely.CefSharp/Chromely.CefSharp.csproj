@@ -44,7 +44,6 @@
 
   <ItemGroup>
     <PackageReference Include="CefSharp.Common" Version="86.0.241" />
-    <PackageReference Include="Chromely.Core" Version="5.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
     <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
@@ -54,6 +53,12 @@
 
   <ItemGroup>
     <None Include="chromely.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Chromely.Core">
+      <HintPath>..\Chromely.Core\Chromely.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
