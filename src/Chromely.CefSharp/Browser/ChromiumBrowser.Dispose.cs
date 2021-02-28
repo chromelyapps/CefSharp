@@ -54,6 +54,9 @@ namespace Chromely.CefSharp.Browser
 
         private void FreeUnmanagedResources()
         {
+            // Repeated if missed
+            Cef.Shutdown();
+
             _browser = null;
 
             if (BrowserSettings != null)
