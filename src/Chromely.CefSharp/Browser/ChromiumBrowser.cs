@@ -11,6 +11,8 @@ using Chromely.Core.Logging;
 using Microsoft.Extensions.Logging;
 using static Chromely.Interop.User32;
 
+using CefSharpBrowserSettings = CefSharp.BrowserSettings;
+
 namespace Chromely.CefSharp.Browser
 {
     /// <summary>
@@ -400,7 +402,7 @@ namespace Chromely.CefSharp.Browser
 
                 if (_browserSettings == null)
                 {
-                    _browserSettings = new BrowserSettings();
+                    _browserSettings = CefSharpBrowserSettings.Create(true);
                 }
 
                 _managedCefBrowserAdapter = ManagedCefBrowserAdapter.Create(this, false);
