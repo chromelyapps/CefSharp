@@ -104,7 +104,7 @@ namespace Chromely.CefSharp.Browser
                 }
 
                 //Dispose of BrowserSettings if we created it, if user created then they're responsible
-                if (_browserSettings != null && _browserSettings.FrameworkCreated)
+                if (_browserSettings != null && _browserSettings.AutoDispose)
                 {
                     _browserSettings.Dispose();
                 }

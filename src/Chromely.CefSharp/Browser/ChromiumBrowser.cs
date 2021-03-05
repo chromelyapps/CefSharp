@@ -29,7 +29,7 @@ namespace Chromely.CefSharp.Browser
         /// <summary>
         /// The managed cef browser adapter
         /// </summary>
-        protected ManagedCefBrowserAdapter _managedCefBrowserAdapter;
+        protected IBrowserAdapter _managedCefBrowserAdapter;
         /// <summary>
         /// The browser
         /// </summary>
@@ -82,7 +82,6 @@ namespace Chromely.CefSharp.Browser
         {
             NativeHost = nativeHost;
             _config = config;
-            CefSharpSettings.LegacyJavascriptBindingEnabled = false;
         }
 
         public IChromelyNativeHost NativeHost { get; private set; }
@@ -404,7 +403,7 @@ namespace Chromely.CefSharp.Browser
                     _browserSettings = new BrowserSettings();
                 }
 
-                _managedCefBrowserAdapter = new ManagedCefBrowserAdapter(this, false);
+                _managedCefBrowserAdapter = ManagedCefBrowserAdapter.Create(this, false);
 
                 _initialized = true;
             }

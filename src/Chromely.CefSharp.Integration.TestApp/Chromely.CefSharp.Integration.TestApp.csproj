@@ -5,20 +5,25 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Platforms>x64</Platforms>
     <ApplicationIcon>chromely.ico</ApplicationIcon>
+    <!--
+	  When RuntimeIdentifier specified SelfContained defaults to true, which copies the whole runtime
+    to our bin folder, for purposes of this example set to false
+	  -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.Common" Version="86.0.241" />
+    <PackageReference Include="CefSharp.Common.NETCore" Version="88.2.90"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.5" />
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chromely.CefSharp\Chromely.CefSharp.csproj" />
+    <ProjectReference Include="..\Chromely.CefSharp\Chromely.CefSharp.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -35,38 +40,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
- 
-  <ItemGroup>
-    <!-- TODO: These updates are currently required because CefSharp.WinForms specifies
-         <Private>false</Private>, which means these libraries will not be specified in
-         the .deps.json file, and so the CoreCLR wouldn't load these. -->
-    <Reference Update="CefSharp">
-      <Private>true</Private>
-    </Reference>
-    <Reference Update="CefSharp.Core">
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>
-
-  <!-- Include CefSharp.BrowserSubprocess.Core so we can selfhost the BrowserSubProcess using our exe -->
-  <Choose>
-    <When Condition="'$(PlatformTarget)' == 'x64'">
-      <ItemGroup>
-        <Reference Include="CefSharp.BrowserSubprocess.Core">
-          <HintPath>$(CefSharpBrowserProcessCore64)</HintPath>
-          <Private>true</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <!-- x86, Win32 and AnyCPU -->
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="CefSharp.BrowserSubprocess.Core">
-          <HintPath>$(CefSharpBrowserProcessCore32)</HintPath>
-          <Private>true</Private>
-        </Reference>
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
 </Project>
