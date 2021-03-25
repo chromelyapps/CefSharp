@@ -502,7 +502,7 @@ namespace Chromely.CefSharp.Browser
                     _browserSettings.UniversalAccessFromFileUrls = CefState.Enabled;
                     _browserSettings.WebSecurity = CefState.Disabled;
 
-                    _managedCefBrowserAdapter.CreateBrowser(windowInfo, _browserSettings as BrowserSettings, _requestContext as RequestContext, Address);
+                    _managedCefBrowserAdapter.CreateBrowser(windowInfo, _browserSettings, _requestContext, Address);
                 }
                 else
                 {

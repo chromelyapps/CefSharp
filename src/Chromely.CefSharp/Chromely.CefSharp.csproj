@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;netcoreapp3.1;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net462</TargetFrameworks>
     <CefSharpBuildAction>NoAction</CefSharpBuildAction>
     <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    <ProductVersion>5.1.88.0</ProductVersion>
-    <AssemblyVersion>5.1.88.0</AssemblyVersion>
-    <FileVersion>5.1.88.0</FileVersion>
-    <Version>5.1.88.0</Version>
+    <ProductVersion>5.1.89.0</ProductVersion>
+    <AssemblyVersion>5.1.89.0</AssemblyVersion>
+    <FileVersion>5.1.89.0</FileVersion>
+    <Version>5.1.89.0</Version>
     <Authors>Chromely Projects</Authors>
     <Company>Chromely Projects</Company>
     <Description>Chromely CefSharp implementation - can be used in .Net 4.6.2, .NET Core 3.1 and .NET 5 (Windows Only) projects. Chromely.CefSharp version naming is based Chromely and Chromium versions implemented- major.minor.chromuim version.patch e.g 1.0.71.0.</Description>
@@ -20,7 +20,7 @@
     <PackageTags>CEF Chromium HTML5 Desktop Chromely CefSharp NetStandard .NET Core 3 .NET 5</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-      - Upgraded to CefSharp/Chromium v88.
+      - Upgraded to CefSharp/Chromium v89.
       - Can no longer target .Net Standard, must target .Net 4.6.2 or .Net Core 3.1 or .Net 5.0
       - Update to System.Text.Json 5.0.0 (Required by CefSharp).
     </PackageReleaseNotes>
@@ -52,15 +52,11 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <PackageReference Include="CefSharp.Common" Version="88.2.90">
-      <ExcludeAssets>buildTransitive</ExcludeAssets>
-    </PackageReference>
+    <PackageReference Include="CefSharp.Common" Version="89.0.140-pre"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
-    <PackageReference Include="CefSharp.Common.NETCore" Version="88.2.90">
-      <ExcludeAssets>buildTransitive</ExcludeAssets>
-    </PackageReference>
+    <PackageReference Include="CefSharp.Common.NETCore" Version="89.0.140-pre"/>
   </ItemGroup>
 
   <ItemGroup>

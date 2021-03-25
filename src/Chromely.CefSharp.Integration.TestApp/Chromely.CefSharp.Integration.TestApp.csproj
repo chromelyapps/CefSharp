@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.Common.NETCore" Version="88.2.90"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.5" />
@@ -40,4 +39,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="CefSharpAfterBuildDebug" AfterTargets="Build">
+    <CallTarget Targets="CefSharpAfterBuildDiagnostic" />
+  </Target>
 </Project>
