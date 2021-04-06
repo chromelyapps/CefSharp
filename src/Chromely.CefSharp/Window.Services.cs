@@ -188,7 +188,12 @@ namespace Chromely.CefSharp
                                 {
                                     var bindingOptions = handler.BindingOptions as BindingOptions;
                                     bindingOptions = bindingOptions ?? BindingOptions.DefaultBinder;
+#if NET462
                                     repo.Register(name: handler.ObjectName, objectToBind: handler.BoundObject, isAsync: true, options: bindingOptions);
+#else
+                                    repo.Register(name: handler.ObjectName, objectToBind: handler.BoundObject, options: bindingOptions);
+#endif
+
                                 }
                                 else
                                 {

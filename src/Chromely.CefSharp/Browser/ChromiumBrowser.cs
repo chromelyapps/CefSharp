@@ -11,6 +11,8 @@ using Chromely.Core.Logging;
 using Microsoft.Extensions.Logging;
 using static Chromely.Interop.User32;
 
+using CefSharpBrowserSettings = CefSharp.BrowserSettings;
+
 namespace Chromely.CefSharp.Browser
 {
     /// <summary>
@@ -29,7 +31,7 @@ namespace Chromely.CefSharp.Browser
         /// <summary>
         /// The managed cef browser adapter
         /// </summary>
-        protected ManagedCefBrowserAdapter _managedCefBrowserAdapter;
+        protected IBrowserAdapter _managedCefBrowserAdapter;
         /// <summary>
         /// The browser
         /// </summary>
@@ -82,7 +84,6 @@ namespace Chromely.CefSharp.Browser
         {
             NativeHost = nativeHost;
             _config = config;
-            CefSharpSettings.LegacyJavascriptBindingEnabled = false;
         }
 
         public IChromelyNativeHost NativeHost { get; private set; }
@@ -401,10 +402,10 @@ namespace Chromely.CefSharp.Browser
 
                 if (_browserSettings == null)
                 {
-                    _browserSettings = new BrowserSettings();
+                    _browserSettings = CefSharpBrowserSettings.Create(true);
                 }
 
-                _managedCefBrowserAdapter = new ManagedCefBrowserAdapter(this, false);
+                _managedCefBrowserAdapter = ManagedCefBrowserAdapter.Create(this, false);
 
                 _initialized = true;
             }
@@ -501,7 +502,7 @@ namespace Chromely.CefSharp.Browser
                     _browserSettings.UniversalAccessFromFileUrls = CefState.Enabled;
                     _browserSettings.WebSecurity = CefState.Disabled;
 
-                    _managedCefBrowserAdapter.CreateBrowser(windowInfo, _browserSettings as BrowserSettings, _requestContext as RequestContext, Address);
+                    _managedCefBrowserAdapter.CreateBrowser(windowInfo, _browserSettings, _requestContext, Address);
                 }
                 else
                 {
