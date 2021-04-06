@@ -73,6 +73,10 @@ namespace Chromely.CefSharp.Browser
                 {
                     framelessOption.IsDraggable = (nativeHost, point) =>
                     {
+                        var scale = nativeHost.GetWindowDpiScale();
+                        point.X = (int)(point.X / scale);
+                        point.Y = (int)(point.Y / scale);
+
                         var hitNoDrag = regions.Any(r => !r.Draggable && ContainsPoint(r, point));
                         if (hitNoDrag)
                         {
