@@ -14,7 +14,7 @@ Have a quick question? Wanna chat? Connect on  [![Join the chat at https://gitte
 Have an app/project/tool using Chromely - [please share!](https://github.com/chromelyapps/Chromely/issues/63)
 
 [![Chromely.Core](http://img.shields.io/nuget/vpre/Chromely.Core.svg?style=flat&label=Chromely.Core)](https://www.nuget.org/packages/Chromely.Core)
-[![Chromely.CefSharp](http://img.shields.io/nuget/vpre/Chromely.svg?style=flat&label=Chromely.CefSharp)](https://www.nuget.org/packages/Chromely.CefSharp)
+[![Chromely.CefSharp](http://img.shields.io/nuget/vpre/Chromely.CefSharp.svg?style=flat&label=Chromely.CefSharp)](https://www.nuget.org/packages/Chromely.CefSharp)
 
 A basic Chromely project requires: - [Demos](https://github.com/chromelyapps/demo-projects/tree/master/regular-chromely/CefSharpDemo)
 
