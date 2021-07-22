@@ -59,7 +59,7 @@ namespace Chromely.CefSharp.NativeHost
 
         /// <summary>Determines whether the specified keyboard input should be allowed to be processed by the system.</summary>
         /// <remarks>Helps block unwanted keys and key combinations that could exit the app, make system changes, etc.</remarks>
-        private bool AllowKeyboardInput(bool alt, bool control, Keys key)
+        protected virtual bool AllowKeyboardInput(bool alt, bool control, Keys key)
         {
             if (_options.KioskMode)
             {
@@ -71,7 +71,7 @@ namespace Chromely.CefSharp.NativeHost
 
         #region
 
-        private bool AllowKeyboardInputForKioskMode(bool alt, bool control, Keys key)
+        protected virtual bool AllowKeyboardInputForKioskMode(bool alt, bool control, Keys key)
         {
             if (!_options.KioskMode)
             {
@@ -114,7 +114,7 @@ namespace Chromely.CefSharp.NativeHost
         #endregion
     }
 
-    internal class KeyboardParam
+    public class KeyboardParam
     {
         public KeyboardParam(bool isKeyUp, bool alt, bool control, Keys key)
         {
